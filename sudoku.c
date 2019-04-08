@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 void printpuzzle(int data[9][9])
 {
@@ -24,34 +25,29 @@ void printpuzzle(int data[9][9])
 
 void solve(int data[9][9])
 {
+    int *filled_cells;  
     int nums[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
         {
             if (data[i][j] == 0)
-            {
+            {                
                 for (int x = 0; x < 9; x++)
                 {
-                    int row_match = 0;
-                    int col_match = 0;
+                    int row_col_match = 0;                    
                     int sub_match = 0;
+
                     for (int a = 0; a < 9; a++)
                     {
-                        if (data[i][a] == nums[x])
+                        if (data[i][a] == nums[x] || data[a][j] == nums[x])
                         {
-                            row_match = 1;
+                            row_col_match = 1;
                             break;
                         }
                     }
-                    for (int a = 0; a < 9; a++)
-                    {
-                        if (data[a][j] == nums[x])
-                        {
-                            col_match = 1;
-                            break;
-                        }
-                    }
+                   
                     int x1 = 0;
                     int x2 = 0;
                     int y1 = 0;
@@ -97,19 +93,45 @@ void solve(int data[9][9])
                             {
                                 sub_match = 1;
                                 break;
-                            }
-                            
+                            }                            
                         }
                     }
 
-                    if (!row_match && !col_match && !sub_match)
-                        data[i][j] = nums[x];
+                    if (!row_col_match && !sub_match)
+                    {
+                        data[i][j] = nums[x];                           
+                        filled_cells = (int *)malloc(sizeof(int) * 2);   
+                        int len = (int) sizeof(filled_cells) / sizeof(int);
+                        filled_cells[len - 2] = i;
+                        filled_cells[len - 1] = j;
+                        break;
+                    }                        
+                }
+                if(data[i][j] == 0)
+                {
+                    int len = (int) sizeof(filled_cells) / sizeof(int);
+                    for(int index = len - 1; index >= 0; index--)
+                    {
+                        int i1 = filled_cells[index - 2];
+                        int j1 = filled_cells[index - 1];
+
+                        if(data[i1][j1] == 9)
+                        {
+                            data[i1][j1] = 0;                             
+                        }                           
+                        else
+                        {
+                            data[i1][j1] = data[i1][j1] + 1;
+                            i = i1;
+                            j = j1;
+                        }              
+                    } 
                 }
             }
         }
     }
 
-    printpuzzle(data);
+    printpuzzle(data); 
 }
 
 int main()
@@ -125,6 +147,6 @@ int main()
         {2, 0, 0, 8, 0, 3, 0, 9, 0},
         {0, 6, 0, 0, 0, 2, 3, 4, 1}};
 
-    solve(input);
+    solve(input);    
     return 0;
 }
