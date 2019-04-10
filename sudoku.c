@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-void printpuzzle(int data[9][9])
+void print_puzzle(int data[9][9])
 {
     printf("-------------------------------\n");
     for (int i = 0; i < 9; i++)
@@ -23,12 +22,12 @@ void printpuzzle(int data[9][9])
     }
 }
 
-int check_exist(int data[9][9], int i, int j, int number)
+int check_number_exists(int data[9][9], int i, int j, int number)
 {
     for (int a = 0; a < 9; a++)
     {
         if (data[i][a] == number || data[a][j] == number)
-        {            
+        {
             return 1;
         }
     }
@@ -80,62 +79,49 @@ int check_exist(int data[9][9], int i, int j, int number)
             }
         }
     }
+
+    return 0;
 }
 
-int get_last_saved_cell(int cell[81][2])
-{    
-    for(int i = 0; i < 81; i++) 
-    {
-        if(cell[i][0] == 0 && cell[i][1] == 0)
-        {
-            if(i == 0)            
-                return 0;                            
-            else            
-                return i - 1;     
-        }    
-    }   
-}
-
-void solve(int data[9][9], int cells[81][2])
-{    
-    int nums[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};    
+int get_empty_cell(int data[9][9], int* row, int* col)
+{
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)
         {
             if (data[i][j] == 0)
-            {                              
-                for (int x = 0; x < 9; x++)
-                {
-                    if(!check_exist(data, i, j, nums[x]))
-                    {
-                        data[i][j] = nums[x];    
-                        int last_cell = get_last_saved_cell(cells);
-                        cells[last_cell][0] = i;   
-                        cells[last_cell][1] = j;         
-                        break;
-                    }
-                }
-                if (data[i][j] == 0)
-                {
-                    int last_cell = get_last_saved_cell(cells);
-                    int cell_i = cells[last_cell][0];
-                    int cell_j = cells[last_cell][1];
-                    if (data[cell_i][cell_j] == 9)
-                    {
-                        data[cell_i][cell_j] = 0;
-                        cells[last_cell][0] = 0;
-                        cells[last_cell][1] = 0;
-                    }
-                    else
-                    {
-                        data[cell_i][cell_j] = data[cell_i][cell_j] + 1;                        
-                    }                    
-                }
-            }            
+            {
+                *row = i;
+                *col = j;
+                return 0;
+            }
         }
-    }     
-    printpuzzle(data); 
+    }  
+    print_puzzle(data);  
+    return 1;
+}
+
+int solve(int data[9][9])
+{
+    int row;
+    int col;       
+
+    if (get_empty_cell(data, &row, &col))
+        return 1;
+
+    for (int x = 1; x <= 9; x++)
+    {
+        if (!check_number_exists(data, row, col, x))
+        {
+            data[row][col] = x;
+
+            if (solve(data))
+                return 1;
+
+            data[row][col] = 0;
+        }        
+    }
+    return 0;
 }
 
 int main()
@@ -151,7 +137,6 @@ int main()
         {2, 0, 0, 8, 0, 3, 0, 9, 0},
         {0, 6, 0, 0, 0, 2, 3, 4, 1}};
 
-    int cells[81][2] = {{0,0}};
-    solve(input, cells);   
+    solve(input);    
     return 0;
 }
