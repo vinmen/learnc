@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+int count = 0;
+
 void print_puzzle(int data[9][9])
 {
     printf("-------------------------------\n");
@@ -22,27 +24,24 @@ void print_puzzle(int data[9][9])
     }
 }
 
-int check_number_exists(int data[9][9], int i, int j, int number)
+int check_number_exists(int data[9][9], int row, int col, int number)
 {
-    for (int a = 0; a < 9; a++)
-    {
-        if (data[i][a] == number || data[a][j] == number)
-        {
-            return 1;
-        }
-    }
-
+    // check number exists in row and column
+    for (int i = 0; i < 9; i++)    
+        if (data[row][i] == number || data[i][col] == number)        
+            return 1;      
+    
     int x1 = 0;
     int x2 = 0;
     int y1 = 0;
     int y2 = 0;
 
-    if (i <= 2)
+    if (row <= 2)
     {
         x1 = 0;
         x2 = 2;
     }
-    else if (i <= 5)
+    else if (row <= 5)
     {
         x1 = 3;
         x2 = 5;
@@ -53,55 +52,49 @@ int check_number_exists(int data[9][9], int i, int j, int number)
         x2 = 8;
     }
 
-    if (j <= 2)
+    if (col <= 2)
     {
         y1 = 0;
         y2 = 2;
     }
-    else if (j <= 5)
+    else if (col <= 5)
     {
         y1 = 3;
         y2 = 5;
     }
-    else if (j <= 8)
+    else
     {
         y1 = 6;
         y2 = 8;
     }
 
-    for (int l = x1; l <= x2; l++)
-    {
-        for (int k = y1; k <= y2; k++)
-        {
-            if (data[l][k] == number)
-            {
-                return 1;
-            }
-        }
-    }
+    // check number exists in sub grid
+    for (int l = x1; l <= x2; l++)    
+        for (int k = y1; k <= y2; k++)        
+            if (data[l][k] == number)            
+                return 1;      
 
     return 0;
 }
 
 int get_empty_cell(int data[9][9], int* row, int* col)
 {
-    for (int i = 0; i < 9; i++)
-    {
-        for (int j = 0; j < 9; j++)
-        {
+    for (int i = 0; i < 9; i++)    
+        for (int j = 0; j < 9; j++)        
             if (data[i][j] == 0)
             {
                 *row = i;
                 *col = j;
                 return 0;
-            }
-        }
-    }  
+            }        
+    
+    //print puzzle if no empty cells present
+    printf("Solution :\n");
     print_puzzle(data);  
     return 1;
 }
 
-int solve(int data[9][9])
+int solve_puzzle(int data[9][9])
 {
     int row;
     int col;       
@@ -115,12 +108,14 @@ int solve(int data[9][9])
         {
             data[row][col] = x;
 
-            if (solve(data))
+            // solve the rest of the empty cells
+            if (solve_puzzle(data))
                 return 1;
 
-            data[row][col] = 0;
+            // set cell as 0 if previous cell not filled
+            data[row][col] = 0;             
         }        
-    }
+    }    
     return 0;
 }
 
@@ -137,6 +132,8 @@ int main()
         {2, 0, 0, 8, 0, 3, 0, 9, 0},
         {0, 6, 0, 0, 0, 2, 3, 4, 1}};
 
-    solve(input);    
+    printf("Puzzle :\n");
+    print_puzzle(input);
+    solve_puzzle(input);    
     return 0;
 }
