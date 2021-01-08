@@ -1,0 +1,26 @@
+#include <stdio.h>
+
+int main(int argc, char *argv[]) {
+	int x = 51;
+	printf("number : %d\n", x);
+	int digits = 0;
+	if(x < 10)
+		digits = 1;
+	else {
+	
+	}
+	while (x > 10) {
+		x = x / 10;
+		++digits;
+	}
+
+	printf("digits: %d\n", digits);
+
+	return 0;
+}
+
+
+while (x > 10) {
+                x = x / 10;
+                ++digits;
+        }
